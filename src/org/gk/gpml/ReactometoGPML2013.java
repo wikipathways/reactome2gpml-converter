@@ -95,7 +95,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void convertPathway(GKInstance pathway, String outputFileName)
+	public void convertPathway(GKInstance pathway, String outputFileDir)
 			throws Exception {
 		RenderablePathway diagram = queryPathwayDiagram(pathway);
 		if (diagram == null) {
@@ -124,6 +124,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		 * Create new pathway
 		 */
 		gpmlpathway = new Pathway();
+		System.out.println("Creating new GPML pathway "+diagram.getDisplayName());
 		complexCount = 0;
 		/*
 		 * Create new mappInfo and Infobox, every pathway needs to have one
@@ -277,7 +278,14 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		gpmlpathway.add(mappInfo);
 		gpmlpathway.add(infoBox);
 		gpmlpathway.fixReferences();
-		gpmlpathway.writeToXml(new File(outputFileName), true);
+		
+		String pathwayname = gpmlpathway.getMappInfo().getMapInfoName();
+		pathwayname = pathwayname.replaceAll("/", "_");
+		pathwayname = pathwayname.replaceAll(" ", "-");
+		
+		File outputFile = new File(outputFileDir+pathwayname+".gpml");
+		gpmlpathway.writeToXml(outputFile, true);
+		System.out.println("Pathway file created at: "+outputFile.getAbsolutePath());
 
 	}
 
@@ -294,7 +302,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			GKInstance inst;
 			try {
 				inst = dbAdaptor.fetchInstance(node.getReactomeId());
-
+				System.out.println("Converting Nodes to Datanodes ...");
 				if (inst != null) {
 					if (node instanceof RenderableProtein)
 						dNode.setDataNodeType(DataNodeType.PROTEIN);
@@ -330,7 +338,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	}
 
 	private void convertEdge(HyperEdge edge) throws Exception {
-
+		System.out.println("Converting Hyperedges to Interactions ...");
 		String graphId = "e_" + edge.getID();
 		List<Point> points = edge.getBackbonePoints();
 
@@ -363,7 +371,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	private void convertComplex(Long rId, double y2) throws IOException,
 			ParserConfigurationException, SAXException,
 			XPathExpressionException {
-
+		System.out.println("Getting Complex components using Reactome Webservice ...");
 		String urlString = "http://reactomews.oicr.on.ca:8080/ReactomeRESTfulAPI/"
 				+ "RESTfulWS/queryById/Complex/" + rId;
 		URL url = new URL(urlString);
@@ -460,6 +468,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	}
 	
 	private PathwayElement convertCompartment(RenderableCompartment compartment) {
+		System.out.println("Converting Compartments to Shapes ...");
 		shape = PathwayElement.createPathwayElement(ObjectType.SHAPE);
 		shape.setGraphId("comp_" + compartment.getID());
 		shape.setGroupRef("group_comp_" + compartment.getID());
@@ -484,6 +493,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	}
 
 	private PathwayElement createLabelForNote(Note note, PathwayElement label) {
+		System.out.println("Converting Notes to Labels ...");
 		if (note.isPrivate()) // Private notes should not be converted
 			return null;
 		label.setGraphId(gpmlpathway.getUniqueGraphId());
@@ -687,7 +697,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	@SuppressWarnings("unchecked")
 	private void addXrefnLitRef(PathwayElement pwyele, Long rId,
 			GKInstance instance) throws Exception {
-
+		System.out.println("Annotating elements ...");
 		/*
 		 * Try to get ReferenceEntity
 		 */
