@@ -7,12 +7,8 @@ The class ReatometoGPML2013.java does the actual conversion and class CLICOnvert
 
 Eclipse is used as Java IDE
 
-After set up the project in Eclipse, you need to install a local Reactome database for easy test. You can download a public release database from http://www.reactome.org/download.
+After setting up the project in Eclipse, you need to install a local Reactome database for easy test. You can download a public release database from http://www.reactome.org/download.
 
-Start testing with these two methods in class org.reactome.sgml.ReactomeToGPML2013Converter. You may have to provide your correct database connection information for class MySQLAdaptor().
+The conversion is performed by the convertPathway method in class org.reactome.sgml.ReactomeToGPML2013Converter. You may have to provide your correct database connection information for class MySQLAdaptor().
 
-      ** testSingleConvert()
-
-      ** testConvert()
-
-
+      
