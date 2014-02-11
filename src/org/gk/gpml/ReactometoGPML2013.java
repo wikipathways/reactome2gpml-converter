@@ -103,12 +103,12 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void convertPathway(GKInstance pathway, String outputFileDir)
+	public void convertPathway(GKInstance reactPathway, String outputFileDir)
 			throws Exception {
-		RenderablePathway diagram = queryPathwayDiagram(pathway);
+		RenderablePathway diagram = queryPathwayDiagram(reactPathway);
 		if (diagram == null) {
 			throw new IllegalArgumentException(
-					pathway
+					reactPathway
 							+ " has no diagram available in the database, and cannot be converted to GPML at this time.");
 		}
 
@@ -151,14 +151,18 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		 * Set pathway information
 		 */
 		mappInfo.setStaticProperty(StaticProperty.MAPINFONAME,
-				pathway.getDisplayName());
+				reactPathway.getDisplayName());
 		mappInfo.setMapInfoDataSource(DATA_SOURCE);
 		mappInfo.setVersion(VERSION);
-
+		
+		/*
+		 * Add Comments to Pathway for Wikipathways description
+		 */
+		addPathwayComment(mappInfo, reactPathway);
 		/*
 		 * Set species
 		 */
-		GKInstance species = (GKInstance) pathway
+		GKInstance species = (GKInstance) reactPathway
 				.getAttributeValue(ReactomeJavaConstants.species);
 		if (species != null) {
 			mappInfo.setStaticProperty(StaticProperty.ORGANISM,
@@ -168,7 +172,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		/*
 		 * Adding authors
 		 */
-		GKInstance authored = (GKInstance) pathway
+		GKInstance authored = (GKInstance) reactPathway
 				.getAttributeValue(ReactomeJavaConstants.authored);
 		List<GKInstance> values = null;
 		if (authored != null) {
@@ -182,7 +186,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		/*
 		 * Edited is converted to Maintainer
 		 */
-		GKInstance edited = (GKInstance) pathway
+		GKInstance edited = (GKInstance) reactPathway
 				.getAttributeValue(ReactomeJavaConstants.edited);
 		if (edited != null) {
 			values = edited
@@ -301,10 +305,19 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		String pathwayname = gpmlpathway.getMappInfo().getMapInfoName();
 		pathwayname = pathwayname.replaceAll("/", "_");
 
-		File outputFile = new File(outputFileDir + pathwayname + ".gpml");
+		/*
+		 * For single convert
+		 */
+//		File outputFile = new File(outputFileDir + "/"+pathwayname + ".gpml");
+		
+		/*
+		 * For batch convert
+		 */
+		File outputFile = new File(outputFileDir);
+		
 		gpmlpathway.writeToXml(outputFile, true);
-		// System.out.println("Pathway file created at: "
-		// + outputFile.getAbsolutePath());
+		 System.out.println("Pathway file created at: "
+		 + outputFile.getAbsolutePath());
 
 	}
 
@@ -344,7 +357,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			GKInstance inst;
 			try {
 				inst = dbAdaptor.fetchInstance(node.getReactomeId());
-				 System.out.println("Converting Nodes to Datanodes ...");
+				System.out.println("Converting Nodes to Datanodes ...");
 				if (inst != null) {
 					if (node instanceof RenderableProtein)
 						dNode.setDataNodeType(DataNodeType.PROTEIN);
@@ -369,10 +382,11 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 					} else
 						dNode.setDataNodeType(DataNodeType.UNKOWN);
 				}
-				addXrefnLitRef(dNode, node.getReactomeId(), inst);
+				addXref(dNode, node.getReactomeId(), inst);
+				addLitRef(dNode,  inst);
 				String displayname = refineDisplayNames(node.getDisplayName());
-//				String displayname = node.getDisplayName();
-//				displayname = displayname.replaceAll(":", "\n");
+				// String displayname = node.getDisplayName();
+				// displayname = displayname.replaceAll(":", "\n");
 				dNode.setTextLabel(displayname);
 				addGraphicsElm(node, dNode);
 				dNode.setGraphId("n" + node.getID() + "");
@@ -418,8 +432,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			ParserConfigurationException, SAXException,
 			XPathExpressionException {
 
-		 System.out
-		 .println("Getting Complex components using Reactome Webservice ...");
+		System.out
+				.println("Getting Complex components using Reactome Webservice ...");
 		String urlString = "http://reactomews.oicr.on.ca:8080/ReactomeRESTfulAPI/"
 				+ "RESTfulWS/queryById/Complex/" + rId;
 		// System.out.println(urlString);
@@ -514,8 +528,9 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 					inst = dbAdaptor.fetchInstance(rId);
 					pwyelement = PathwayElement
 							.createPathwayElement(ObjectType.LABEL);
-					String displayname = refineDisplayNames(inst.getDisplayName());
-//					String displayname = inst.getDisplayName();
+					String displayname = refineDisplayNames(inst
+							.getDisplayName());
+					// String displayname = inst.getDisplayName();
 					pwyelement.setTextLabel(displayname);
 
 					/*
@@ -538,8 +553,9 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 					inst = dbAdaptor.fetchInstance(rId);
 					pwyelement = PathwayElement
 							.createPathwayElement(ObjectType.LABEL);
-					String displayname = refineDisplayNames(inst.getDisplayName());
-//					String displayname = inst.getDisplayName();
+					String displayname = refineDisplayNames(inst
+							.getDisplayName());
+					// String displayname = inst.getDisplayName();
 					pwyelement.setTextLabel(displayname);
 
 					/*
@@ -566,12 +582,14 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 
 					Long rId = Long.parseLong(complexname);
 					inst = dbAdaptor.fetchInstance(rId);
-					String displayname = refineDisplayNames(inst.getDisplayName());
-//					String displayname = inst.getDisplayName();
+					String displayname = refineDisplayNames(inst
+							.getDisplayName());
+					// String displayname = inst.getDisplayName();
 					pwyelement.setTextLabel(displayname);
 
 					pwyelement.setGroupRef(complexmem.getGroupId());
-					addXrefnLitRef(pwyelement, rId, inst);
+					addXref(pwyelement, rId, inst);
+					addLitRef(pwyelement, inst);
 				}
 
 				// double cx = 100 + (x * 100);
@@ -673,7 +691,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 
 		if (edge.getReactomeId() != null) {
 			GKInstance rxt = dbAdaptor.fetchInstance(edge.getReactomeId());
-			addXrefnLitRef(newInteraction, edge.getReactomeId(), rxt);
+			addXref(newInteraction, edge.getReactomeId(), rxt);
+			addLitRef(newInteraction,  rxt);
 		}
 		gpmlpathway.add(newInteraction);
 		return newInteraction;
@@ -701,9 +720,14 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 				PathwayElement intElem = gpmlpathway.getElementById(intId);
 				PathwayElement nodElem = gpmlpathway.getElementById("n"
 						+ catalyst.getID() + "");
-				intElem.getMEnd().linkTo(anchor);
-				intElem.getMStart().linkTo(nodElem);
-
+				try{
+					intElem.getMEnd().linkTo(anchor);
+					intElem.getMStart().linkTo(nodElem);
+				}
+				catch (Exception e){
+					System.out.println("Problems!");
+				}
+				
 			}
 
 		}
@@ -817,12 +841,12 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	// return newId;
 	// }
 
-	 private String refineDisplayNames(String text) {
-	 String textlabel[] = text.split("\\[");
-	 String displaylabel[] = textlabel[0].split("\\(");
-	 text = displaylabel[0].replaceAll(":", "\n");
-	 return text;
-	 }
+	private String refineDisplayNames(String text) {
+		String textlabel[] = text.split("\\[");
+		String displaylabel[] = textlabel[0].split("\\(");
+		text = displaylabel[0].replaceAll(":", "\n");
+		return text;
+	}
 
 	private String joinDisplayNames(List<GKInstance> instances) {
 		if (instances == null || instances.size() == 0)
@@ -841,9 +865,112 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		setGraphicsElmAttributes(pwyele, bounds);
 
 	}
+	private void addPathwayComment(PathwayElement pwyele, GKInstance instance) throws Exception {
+		// System.out.println("Annotating elements ...");
+				
+		/*
+		 * Adding comments
+		 */
+		if (instance.getSchemClass().isValidAttribute(
+				ReactomeJavaConstants.summation)) {
+			List<GKInstance> summations = instance
+					.getAttributeValuesList(ReactomeJavaConstants.summation);
+			if (summations != null && summations.size() > 0) {
+				for (GKInstance summation : summations) {
+					String text = (String) summation
+							.getAttributeValue(ReactomeJavaConstants.text);
+					if (text != null && text.length() > 0) {
+						text = text + "\n"+ "<"+"a href=http:"+"//www.reactome.org/PathwayBrowser/#DB=gk_current&FOCUS_SPECIES_ID=48887&FOCUS_PATHWAY_ID="+instance.getDBID()+">View original pathway at Reactome</a> ";
+						pwyele.addComment(text, "WikiPathways-description");
 
+					}
+				}
+			}
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
-	private void addXrefnLitRef(PathwayElement pwyele, Long rId,
+	private void addLitRef(PathwayElement pwyele, GKInstance instance) throws Exception {
+		// System.out.println("Annotating elements ...");
+				
+		/*
+		 * Adding comments
+		 */
+		if (instance.getSchemClass().isValidAttribute(
+				ReactomeJavaConstants.summation)) {
+			List<GKInstance> summations = instance
+					.getAttributeValuesList(ReactomeJavaConstants.summation);
+			if (summations != null && summations.size() > 0) {
+				for (GKInstance summation : summations) {
+					String text = (String) summation
+							.getAttributeValue(ReactomeJavaConstants.text);
+					if (text != null && text.length() > 0) {
+						pwyele.addComment(text, "Reactome");
+
+					}
+				}
+			}
+		}
+
+		/*
+		 * Adding literature references
+		 */
+		if (instance.getSchemClass().isValidAttribute(
+				ReactomeJavaConstants.literatureReference)) {
+			List<GKInstance> litRefs = instance
+					.getAttributeValuesList(ReactomeJavaConstants.literatureReference);
+			if (litRefs != null && litRefs.size() > 0) {
+
+				for (GKInstance litRef : litRefs) {
+					if (litRef.getSchemClass().isValidAttribute(
+							ReactomeJavaConstants.pubMedIdentifier)
+							&& litRef
+									.getAttributeValue(ReactomeJavaConstants.pubMedIdentifier) != null) {
+						String pubId = litRef.getAttributeValue(
+								ReactomeJavaConstants.pubMedIdentifier)
+								.toString();
+						PublicationXref pubref = new PublicationXref();
+						pubref.setPubmedId(pubId);
+
+						/*
+						 * Getting title and author using PMC Rest
+						 */
+						DocumentBuilderFactory dbf = DocumentBuilderFactory
+								.newInstance();
+						DocumentBuilder db = dbf.newDocumentBuilder();
+						XPath xPath = XPathFactory.newInstance().newXPath();
+						String urlString = "http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=ext_id:"
+								+ pubId + "%20src:med";
+						org.w3c.dom.Document publication = db.parse(new URL(
+								urlString).openStream());
+
+						/*
+						 * Get and set Publication title
+						 */
+						String xpathExpression = "responseWrapper/resultList/result/title";
+						String pubTitle = xPath.compile(xpathExpression)
+								.evaluate(publication);
+						pubref.setTitle(pubTitle);
+
+						/*
+						 * Get and set Authors
+						 */
+						String xpathExpression2 = "responseWrapper/resultList/result/authorString";
+						String authors = xPath.compile(xpathExpression2)
+								.evaluate(publication);
+						pubref.setAuthors(authors);
+
+						elementManager.addElement(pubref);
+						pwyele.addBiopaxRef(pubref.getId());
+					}
+				}
+
+			}
+
+		}
+	}
+
+	private void addXref(PathwayElement pwyele, Long rId,
 			GKInstance instance) throws Exception {
 		// System.out.println("Annotating elements ...");
 		/*
@@ -878,7 +1005,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			if (db.getDisplayName().equalsIgnoreCase("chebi")) {
 				pwyele.setDataSource(BioDataSource.CHEBI);
 			} else if (db.getDisplayName().equalsIgnoreCase("uniprot")) {
-				pwyele.setDataSource(BioDataSource.UNIPROT);
+				pwyele.setDataSource(BioDataSource.UNIPROT_SWISSPROT);
 			} else {
 				pwyele.setDataSource(DataSource.getByFullName(db
 						.getDisplayName()));
@@ -966,7 +1093,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 
 		}
 	}
-
+	
 	private void setGraphicsElmAttributes(PathwayElement pwyele,
 			Rectangle bounds) {
 		pwyele.setMCenterX(bounds.getCenterX());

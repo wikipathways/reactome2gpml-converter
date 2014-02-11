@@ -1,8 +1,9 @@
+package org.gk.gpml;
+
 /*
  * Created on Oct 19, 2009
  *
  */
-package org.gk.gpml;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -1106,4 +1107,4 @@ public class ReactomeToGPMLConverter extends AbstractConverterFromReactome {
         outputter.output(doc, new FileOutputStream(fileName));
     }
     
-}
+ }
