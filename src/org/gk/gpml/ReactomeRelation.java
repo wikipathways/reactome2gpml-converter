@@ -1,3 +1,5 @@
+package org.gk.gpml;
+
 //// PathVisio,
 //// a tool for data visualization and analysis using Biological Pathways
 //// Copyright 2006-2009 BiGCaT Bioinformatics
@@ -269,4 +271,4 @@
 //            
 //        }
 //    }
-//}
+// }
