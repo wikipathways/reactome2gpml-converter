@@ -737,7 +737,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		gpmlpathway.add(label);
 		label.setGeneratedGraphId();
 		label.setTextLabel(compt.getDisplayName());
-		label.setGroupRef(groupElm.getGraphId());
+		label.setGroupRef(groupElm.getGroupId());
 		Rectangle textRect = compt.getTextBounds();
 		setGraphicsElmAttributes(label, textRect);
 		}
@@ -812,14 +812,16 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		if (helperNodes == null || helperNodes.size() == 0)
 			return;
 		if (branches != null && branches.size() > 0) {
+			MAnchor anchor = backboneInteraction.addMAnchor(0.5);
 			for (List<Point> points : branches) {
 				points.add(backbone.get((backbone.size()) / 2));
 				Node catalyst = helperNodes.get(branches.indexOf(points));
 //				PathwayElement nodElem = convertNode(catalyst, y);
 				PathwayElement nodElem = gpmlpathway.getElementById(r2gNodeList.get(catalyst.getReactomeId()));
+				
 				if(nodElem != null){
 					PathwayElement intElem = createSegmentedLine(edge,arrowType, points, false);
-					MAnchor anchor = backboneInteraction.addMAnchor(0.5);
+//					MAnchor anchor = backboneInteraction.addMAnchor(0.5);
 					intElem.getMEnd().linkTo(anchor);
 					try{
 						intElem.getMStart().linkTo(nodElem);
@@ -840,6 +842,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		List<Point> backbone = edge.getBackbonePoints();
 		
 		if (inputBranches != null ) {
+			MAnchor anchor = backboneInteraction.addMAnchor(0.0);
 			if(inputBranches.size() > 1){
 			for (List<Point> points : inputBranches) {
 				points.add(backbone.get(0));
@@ -848,7 +851,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 				PathwayElement nodElem = gpmlpathway.getElementById(r2gNodeList.get(input.getReactomeId()));
 				if(nodElem != null){
 					PathwayElement intElem = createSegmentedLine(edge, "line", points, false);
-					MAnchor anchor = backboneInteraction.addMAnchor(0.0);
+//					MAnchor anchor = backboneInteraction.addMAnchor(0.0);
 					intElem.getMEnd().linkTo(anchor);
 					try{
 					intElem.getMStart().linkTo(nodElem);
@@ -878,6 +881,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		List<List<Point>> outputBranches = edge.getOutputPoints();
 
 		if (outputBranches != null ) {
+			MAnchor anchor = backboneInteraction.addMAnchor(0.99);
 			if(outputBranches.size() > 1){
 				for (List<Point> points : outputBranches) {
 					points.add(backbone.get(backbone.size() - 1));
@@ -886,7 +890,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 					PathwayElement nodElem = gpmlpathway.getElementById(r2gNodeList.get(output.getReactomeId()));
 					if(nodElem != null){
 						PathwayElement intElem = createSegmentedLine(edge, "Arrow", points, true);
-						MAnchor anchor = backboneInteraction.addMAnchor(0.99);
+//						MAnchor anchor = backboneInteraction.addMAnchor(0.99);
 						intElem.getMStart().linkTo(anchor);
 						try{
 							intElem.getMEnd().linkTo(nodElem);
