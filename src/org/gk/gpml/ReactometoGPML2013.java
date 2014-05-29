@@ -525,6 +525,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 
 	/*
 	 * Getting components of Reactome Complexes
+	 * @author anwesha
+	 * @author andrawag
 	 */
 	private ArrayList<String> convertComplex(Long rId) throws IOException,
 			ParserConfigurationException, SAXException,
