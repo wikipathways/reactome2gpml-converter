@@ -14,4 +14,7 @@ You will have to provide your correct database connection information for class 
 
 Visit the project website for more information : http://projects.bigcat.unimaas.nl/ReactomeConverter
 
+The project is built using ant. 
+
+
       
