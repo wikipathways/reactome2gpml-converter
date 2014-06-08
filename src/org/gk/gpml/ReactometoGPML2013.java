@@ -1,4 +1,4 @@
-//Recatome Converter
+//Reactome Converter for WikiPathways
 //Copyright BiGCaT- Department of Bioinformatics
 // Year 2014
 
