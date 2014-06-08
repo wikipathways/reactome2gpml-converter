@@ -1,3 +1,7 @@
+//Recatome Converter
+//Copyright BiGCaT- Department of Bioinformatics
+// Year 2014
+
 package org.gk.gpml;
 
 import java.awt.Color;
