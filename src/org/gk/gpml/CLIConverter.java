@@ -5,9 +5,11 @@
 
 package org.gk.gpml;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -51,7 +53,9 @@ public class CLIConverter {
 				+ pathway.getDisplayName() + "...");
 		// Document doc = r2gConverter.convertPathway(pathway);
 //		r2g3Converter.convertPathway(pathway, outputFileName);
+		
 		r2g3Converter.convertPathway(pathway, outputFileName);
+		
 		// XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		// outputter.output(doc, new FileOutputStream(outputFileName));
 		/*
@@ -129,34 +133,33 @@ public class CLIConverter {
 	}
 
 	public static void main(String[] args) throws Exception {
-//		if (args.length < 6) {
-//			// printUsage();
-//			System.err
-//					.println("Please provide the following parameters in order: dbhost dbName dbUser dbPwd dbPort outputDir");
-//			System.exit(1);
-//		}
-//		// MySQLAdaptor adaptor = new MySQLAdaptor(args[0],
-//		// args[1],
-//		// args[2],
-//		// args[3],
-//		// Integer.parseInt(args[4]));
-//
-//		System.out.println("in");
-		MySQLAdaptor adaptor = new MySQLAdaptor("localhost",
-				"reactome_convert", "anwesha", "RConver!a",
-				Integer.parseInt("3306"));
+		if (args.length < 6) {
+			// printUsage();
+			System.err
+					.println("Please provide the following parameters in order: dbhost dbName dbUser dbPwd dbPort outputDir");
+			System.exit(1);
+		}
+		 MySQLAdaptor adaptor = new MySQLAdaptor(args[0],
+		 args[1],
+		 args[2],
+		 args[3],
+		 Integer.parseInt(args[4]));
 
-		CLIConverter converter = new CLIConverter(adaptor);
 
-		File dir = new File("/home/anwesha/ReactomeDatabase/FinalHumanPathways/");
-				
+		File dir = new File(args[5]);
+	 
+		dir.mkdirs();
 		
-		    
-//		dir.mkdirs();
-//		System.out.println("created folder");
-
-//		converter.convertReactomeToGPML((long) 451927, dir.getAbsolutePath());
-		
-		converter.dumpHumanPathwayDiagrams(dir);
+		BufferedReader br = new BufferedReader(new FileReader("/home/anwesha/ReactomeDatabase/HumanV46_19022014/pathwayList.txt"));
+		String line=null;
+        while( (line=br.readLine()) != null) {
+        	CLIConverter converter = new CLIConverter(adaptor);
+        	converter.convertReactomeToGPML(Long.parseLong(line), dir.getAbsolutePath());
+        }
+//		CLIConverter converter = new CLIConverter(adaptor);
+//		converter.convertReactomeToGPML((long) 2161522, dir.getAbsolutePath());
+//		converter.convertReactomeToGPML((long) 163685, dir.getAbsolutePath());
+//		converter.convertReactomeToGPML((long) 202131, dir.getAbsolutePath());
+//		converter.dumpHumanPathwayDiagrams(dir);
 	}
 }
