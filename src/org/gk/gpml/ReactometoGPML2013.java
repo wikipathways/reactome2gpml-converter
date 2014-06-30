@@ -1,3 +1,7 @@
+//Reactome Converter for WikiPathways
+//Copyright BiGCaT- Department of Bioinformatics
+// Year 2014
+
 package org.gk.gpml;
 
 import java.awt.Color;
@@ -525,6 +529,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 
 	/*
 	 * Getting components of Reactome Complexes
+	 * @author anwesha
+	 * @author andrawag
 	 */
 	private ArrayList<String> convertComplex(Long rId) throws IOException,
 			ParserConfigurationException, SAXException,
