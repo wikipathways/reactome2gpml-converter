@@ -40,8 +40,9 @@ public class CLIConverter {
 		 */
 
 		// converter.convertReactomeToGPMLByID((long) 983231, dir, false);
+		// converter.convertReactomeToGPMLByID((long) 2142753, dir, false);
 
-		converter.dumpHumanPathwayDiagrams(dir, true);
+		converter.dumpHumanPathwayDiagrams(dir, false);
 
 	}
 
@@ -75,8 +76,9 @@ public class CLIConverter {
 		Long dbID = pathway.getDBID();
 		System.out.println("converting pathway #" + dbID + " "
 				+ pathway.getDisplayName() + "...");
-
-		r2g3Converter.convertPathway(pathway, gpmlfilename);
+		if (!r2g3Converter.convertPathway(pathway, gpmlfilename)) {
+			notRenderable.add(dbID);
+		}
 
 	}
 
@@ -94,21 +96,21 @@ public class CLIConverter {
 			Boolean saveatxml) {
 
 		GKInstance pathway;
+
 		try {
 			pathway = adaptor.fetchInstance(dbID);
 			String fileName = AbstractConverterFromReactome
 					.getFileName(pathway);
-			File atxmlfile = new File(dir, fileName + ".atxml");
-			atxmlfile.createNewFile();
 			if (saveatxml) {
+				File atxmlfile = new File(dir, fileName + ".atxml");
+				atxmlfile.createNewFile();
 				r2g3Converter.queryATXML(pathway, atxmlfile);
 			}
 			File gpmlfile = new File(dir, fileName + ".gpml");
 			gpmlfile.createNewFile();
 			convertReactomeToGPML(pathway, gpmlfile);
-		} catch (Exception e1) {
-			notRenderable.add(dbID);
-			System.out.println("Not renderable... moving on");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -125,8 +127,7 @@ public class CLIConverter {
 
 	public void dumpHumanPathwayDiagrams(File dir, Boolean saveatxml)
 	{
-
-
+		notRenderable.clear();
 		Collection<?> diagrams;
 		try {
 			diagrams = adaptor
@@ -146,21 +147,22 @@ public class CLIConverter {
 				if (species == null) {
 					continue;
 				}
-				if (species.getDBID().equals(48887L)) {
-					String fileName = AbstractConverterFromReactome
-							.getFileName(pathway);
-					String gpmlfile = fileName + ".gpml";
-					File[] listOfFiles = dir.listFiles();
-					boolean convert = true;
-					for (File listOfFile : listOfFiles)
-						if (gpmlfile.equalsIgnoreCase(listOfFile.getName())) {
-							convert = false;
+				for (int i = 0; i <= 5; i++) {
+					if (species.getDBID().equals(48887L)) {
+						String fileName = AbstractConverterFromReactome
+								.getFileName(pathway);
+						String gpmlfile = fileName + ".gpml";
+						File[] listOfFiles = dir.listFiles();
+						boolean convert = true;
+						for (File listOfFile : listOfFiles)
+							if (gpmlfile.equalsIgnoreCase(listOfFile.getName())) {
+								convert = false;
+							}
+						if (convert) {
+							Long id = pathway.getDBID();
+							convertReactomeToGPMLByID(id, dir,
+									saveatxml);
 						}
-					if (convert) {
-
-						Long id = pathway.getDBID();
-						convertReactomeToGPMLByID(id, dir,
-								true);
 					}
 				}
 			}
