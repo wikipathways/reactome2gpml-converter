@@ -17,8 +17,11 @@ Visit the project website for more information : http://projects.bigcat.unimaas.
 The project is built using ant. 
 
 Reactome Release schedule :
+
 V50 -  Oct 2014
+
 V51 -  Dec 2014
+
 and every three months thereafter.
 
 Following a Reactome release, the Reactome portal at WikiPathways will be updated within a week.
