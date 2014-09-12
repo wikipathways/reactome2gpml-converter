@@ -3,7 +3,7 @@ reactome2gpml-converter
 
 This converter converts Reactome pathways to GPML 2013a format.
 
-The class ReatometoGPML2013.java does the actual conversion and class CLICOnverter provides command line access to the converter.
+The class ReatometoGPML2013.java does the actual conversion and class CLIConverter provides command line access to the converter.
 
 Eclipse is used as Java IDE
 
@@ -15,6 +15,16 @@ You will have to provide your correct database connection information for class 
 Visit the project website for more information : http://projects.bigcat.unimaas.nl/ReactomeConverter
 
 The project is built using ant. 
+
+Reactome Release schedule :
+
+V50 -  Oct 2014
+
+V51 -  Dec 2014
+
+and every three months thereafter.
+
+Following a Reactome release, the Reactome portal at WikiPathways will be updated within a week.
 
 
       
