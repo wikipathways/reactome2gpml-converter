@@ -486,6 +486,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			/*
 			 * A virtual drawing is done to get correct dimensions
 			 */
+
 			PathwayEditor editor = new PathwayEditor();
 			editor.setRenderable(diagram);
 			Dimension size = editor.getPreferredSize();
@@ -526,7 +527,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			gpmlpathway.add(infoBox);
 
 			/*
-			 * Create new biopax element for pathway to store literature references
+			 * Create new biopax element for pathway to store literature
+			 * references
 			 */
 			elementManager = gpmlpathway.getBiopax();
 
@@ -641,8 +643,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 
 			/*
 			 * Converting compartment Two steps are needed for converting
-			 * compartments: 1). Converting the names to labels 2). Converting the
-			 * compartments to rectangles
+			 * compartments: 1). Converting the names to labels 2). Converting
+			 * the compartments to rectangles
 			 */
 			for (RenderableCompartment compartment : compartments) {
 				PathwayElement groupElm = PathwayElement
@@ -659,9 +661,11 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 
 			// File outputFile = new File(gpmlfilename);
 			/*
-			 * Setting to false for checking if process nodes work when set to false
+			 * Setting to false for checking if process nodes work when set to
+			 * false
 			 */
 			gpmlpathway.writeToXml(gpmlfilename, false);
+
 		} catch (Exception e) {
 			System.out.println("No diagram available");
 			return false;
