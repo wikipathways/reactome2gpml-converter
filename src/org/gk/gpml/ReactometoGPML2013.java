@@ -72,11 +72,10 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 
 	private static final int INITIAL_WIDTH = 100;
 	private static final int INITIAL_HEIGHT = 20;
-	private static final int MEDIUM_INITIAL_HEIGHT = 30;
+	private static final int MEDIUM_INITIAL_HEIGHT = 40;
 	private static final int COMPONENTS_ROWS = 20;
 	private static final int LONG_INITIAL_HEIGHT = 50;
 	private static final int COL_GAP = 40;
-	private static final int TOP_GAP = 25;
 
 	private static ArrayList<String> removeDuplicates(ArrayList<String> strings) {
 
@@ -125,7 +124,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	PathwayElement label = null;
 	PathwayElement shape = null;
 	final String DATA_SOURCE = "Reactome - http://www.reactome.org";
-	final String VERSION = "48";
+	final String VERSION = "50";
+	final String PLANT_DATA_SOURCE = "Plant Reactome - http://plantreactome.gramene.org";
 
 	/*
 	 * Adding comments
@@ -179,7 +179,6 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		pwyele.setMHeight(bounds.getHeight());
 		pwyele.setValign(ValignType.MIDDLE);
 		return pwyElement;
-
 	}
 
 	/*
@@ -286,7 +285,12 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			if (id == null) {
 				id = instance.getDBID().toString();
 			}
-			pwyele.setElementID(id);
+			if (id.contains("REACT_")) {
+				pwyele.setElementID(id);
+			} else {
+				pwyele.setElementID("REACT_" + id);
+			}
+
 		} else {
 			GKInstance db = (GKInstance) referenceEntity
 					.getAttributeValue(ReactomeJavaConstants.referenceDatabase);
@@ -531,17 +535,6 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			 * references
 			 */
 			elementManager = gpmlpathway.getBiopax();
-
-			/*
-			 * Set pathway information
-			 */
-			mappInfo.setStaticProperty(StaticProperty.MAPINFONAME,
-					reactomePathway.getDisplayName());
-			mappInfo.setMapInfoDataSource(DATA_SOURCE);
-			mappInfo.setVersion(VERSION);
-			addComments(reactomePathway, mappInfo, true);
-			addLitRef(reactomePathway, mappInfo);
-
 			/*
 			 * Set species
 			 */
@@ -551,6 +544,22 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 				mappInfo.setStaticProperty(StaticProperty.ORGANISM,
 						species.getDisplayName());
 			}
+			/*
+			 * Set pathway information
+			 */
+			mappInfo.setStaticProperty(StaticProperty.MAPINFONAME,
+					reactomePathway.getDisplayName());
+			if (species.getDBID().equals(48887L)) {
+				mappInfo.setMapInfoDataSource(DATA_SOURCE);
+				mappInfo.setVersion(VERSION);
+			} else {
+				mappInfo.setMapInfoDataSource(PLANT_DATA_SOURCE);
+			}
+
+			addComments(reactomePathway, mappInfo, true);
+			addLitRef(reactomePathway, mappInfo);
+
+
 			/*
 			 * Add authors
 			 */
@@ -922,25 +931,32 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 					throws Exception {
 		List<Point> points = new ArrayList<Point>();
 		List<Point> backbone = edge.getBackbonePoints();
+
 		if (helperNodes == null || helperNodes.size() == 0)
 			return;
 		if (helperNodes.size() >= 1) {
 			MAnchor anchor = backboneInteraction.addMAnchor(0.5);
+
 			for (Node helperNode : helperNodes) {
 				Point point = getclosestPoint(helperNode, backbone.get(0));
 				points.add(point);
-				// points.add(backbone.get(backbone.size() / 2));
-				/*
-				 * fix for unconnected interactions
-				 */
-				MPoint mid = backboneInteraction.getMPoints().get(
-						backboneInteraction.getMPoints().size() / 2);
-				Point midpoint = new Point();
-				midpoint.setLocation(mid.getX(), mid.getY());
-				points.add(midpoint);
-				// points.add(backboneInteraction.getMPoints()
-				// .get(backboneInteraction.getMPoints().size() / 2));
-				// backboneInteraction.getMPoints().
+				if (backboneInteraction.getConnectorType() == ConnectorType.SEGMENTED
+						|| backboneInteraction.getConnectorType() == ConnectorType.STRAIGHT) {
+					points.add(backbone.get(backbone.size() / 2));
+				}
+				else {
+					/*
+					 * fix for unconnected interactions when the line is curved
+					 * often catalysts look unconnected in that case we connect
+					 * the catalysts to the beginning
+					 */
+					MPoint mid = backboneInteraction.getMPoints().get(
+							backboneInteraction.getMPoints().size() / 2);
+					Point midpoint = new Point();
+					midpoint.setLocation(mid.getX(), mid.getY());
+					points.add(midpoint);
+				}
+
 				PathwayElement intElem = createSegmentedLine(edge,
 						arrowType,
 						points, false);
@@ -1041,21 +1057,16 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	private void layoutComplexComponents(List<PathwayElement> pweList, double y2) {
 		int col = 0;
 		int row = 0;
-		double cy = y2 + TOP_GAP;
+		double cy = y2;
 		for (int i = 0; i < pweList.size(); i++) {
-			double cx = 100 + col * (INITIAL_WIDTH + COL_GAP);
-
 			if (pweList.get(i).getObjectType() == ObjectType.LABEL) {
 				if (row >= COMPONENTS_ROWS) {
-					cy = y2 + TOP_GAP;
+					cy = y2;
 					col++;
 					row = 0;
 				}
 			}
-
-			pweList.get(i).setMCenterX(cx);
-			pweList.get(i).setMCenterY(cy);
-			pweList.get(i).setMWidth(INITIAL_WIDTH);
+			double cx = 100 + col * (INITIAL_WIDTH + COL_GAP);
 
 			if (pweList.get(i).getTextLabel().length() <= 20) {
 				cy = cy + INITIAL_HEIGHT;
@@ -1068,8 +1079,10 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 					cy = cy + MEDIUM_INITIAL_HEIGHT;
 					pweList.get(i).setMHeight(MEDIUM_INITIAL_HEIGHT);
 				}
-
 			}
+			pweList.get(i).setMCenterX(cx);
+			pweList.get(i).setMCenterY(cy);
+			pweList.get(i).setMWidth(INITIAL_WIDTH);
 			row++;
 
 			gpmlpathway.add(pweList.get(i));

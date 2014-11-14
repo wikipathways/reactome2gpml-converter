@@ -39,11 +39,12 @@ public class CLIConverter {
 		 * Boolean true to save ATXML files
 		 */
 
+		converter.convertReactomeToGPMLByID((long) 69620, dir, false);
 		// converter.convertReactomeToGPMLByID((long) 73857, dir, false);
-		// converter.convertReactomeToGPMLByID((long) 2142753, dir, false);
+		// converter.convertReactomeToGPMLByID((long) 2032785, dir, false);
 
 		// converter.dumpHumanPathwayDiagrams(dir, false);
-		converter.convertPlantPathwayDiagrams(dir, false);
+		// converter.convertPlantPathwayDiagrams(dir, false);
 		// converter.getSpeciesDbID();
 	}
 
@@ -186,25 +187,25 @@ public class CLIConverter {
 				if (species == null) {
 					continue;
 				}
-				for (int i = 0; i <= 5; i++) {
-					if (species.getDBID().equals(48887L)) {
-						String fileName = AbstractConverterFromReactome
-								.getFileName(pathway);
-						String gpmlfile = fileName + ".gpml";
-						File[] listOfFiles = dir.listFiles();
-						boolean convert = true;
-						for (File listOfFile : listOfFiles)
-							if (gpmlfile.equalsIgnoreCase(listOfFile.getName())) {
-								convert = false;
-							}
-						if (convert) {
-							Long id = pathway.getDBID();
-							convertReactomeToGPMLByID(id, dir,
-									saveatxml);
+				// for (int i = 0; i <= 5; i++) {
+				if (species.getDBID().equals(48887L)) {
+					String fileName = AbstractConverterFromReactome
+							.getFileName(pathway);
+					String gpmlfile = fileName + ".gpml";
+					File[] listOfFiles = dir.listFiles();
+					boolean convert = true;
+					for (File listOfFile : listOfFiles)
+						if (gpmlfile.equalsIgnoreCase(listOfFile.getName())) {
+							convert = false;
 						}
+					if (convert) {
+						Long id = pathway.getDBID();
+						convertReactomeToGPMLByID(id, dir,
+								saveatxml);
 					}
 				}
 			}
+			// }
 
 		} catch (Exception e) {
 			e.printStackTrace();
