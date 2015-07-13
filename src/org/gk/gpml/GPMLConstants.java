@@ -1,7 +1,8 @@
 package org.gk.gpml;
 
-/*
+/**
  * Updated to GPML 2013a
+ * @author anwesha
  */
 
 public class GPMLConstants {

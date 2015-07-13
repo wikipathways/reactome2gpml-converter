@@ -17,13 +17,18 @@ import org.gk.schema.SchemaAttribute;
 import org.gk.schema.SchemaClass;
 import org.reactome.convert.common.AbstractConverterFromReactome;
 
+/**
+ * The main class for the Reactome Converter
+ * @author anwesha
+ *
+ */
 public class CLIConverter {
 
 	public static void main(String[] args) throws Exception {
 		if (args.length < 6) {
 			// printUsage();
 			System.err
-			.println("Please provide the following parameters in order: dbhost dbName dbUser dbPwd dbPort outputDir");
+					.println("Please provide the following parameters in order: dbhost dbName dbUser dbPwd dbPort outputDir");
 			System.exit(1);
 		}
 
@@ -39,7 +44,10 @@ public class CLIConverter {
 		 * Boolean true to save ATXML files
 		 */
 
-		converter.convertReactomeToGPMLByID((long) 69620, dir, false);
+		/*
+		 * Abacavir transport (Test pathway)
+		 */
+		converter.convertReactomeToGPMLByID((long) 2161522, dir, false);
 		// converter.convertReactomeToGPMLByID((long) 73857, dir, false);
 		// converter.convertReactomeToGPMLByID((long) 2032785, dir, false);
 
@@ -50,10 +58,10 @@ public class CLIConverter {
 
 	private static void printUsage() throws Exception {
 		System.out
-		.println("Usage: java org.gk.gpml.CLIConverter dbhost dbName user pwd port DB_ID [outputfile]");
+				.println("Usage: java org.gk.gpml.CLIConverter dbhost dbName user pwd port DB_ID [outputfile]");
 		System.out.println();
 		System.out
-		.println("DB_ID is the Reactome ID of a pathway that has a diagram inside the database.");
+				.println("DB_ID is the Reactome ID of a pathway that has a diagram inside the database.");
 	}
 
 	private final MySQLAdaptor adaptor;
@@ -118,8 +126,7 @@ public class CLIConverter {
 
 	}
 
-	private void convertReactomeToGPML(GKInstance pathway,
-			File gpmlfilename) {
+	private void convertReactomeToGPML(GKInstance pathway, File gpmlfilename) {
 		Long dbID = pathway.getDBID();
 		System.out.println("converting pathway #" + dbID + " "
 				+ pathway.getDisplayName() + "...");
@@ -143,8 +150,7 @@ public class CLIConverter {
 	 * @param saveatxml
 	 *            Boolean true if atxml files should be saved as well
 	 */
-	public void convertReactomeToGPMLByID(Long dbID, File dir,
-			Boolean saveatxml) {
+	public void convertReactomeToGPMLByID(Long dbID, File dir, Boolean saveatxml) {
 
 		GKInstance pathway;
 
@@ -165,8 +171,7 @@ public class CLIConverter {
 		}
 	}
 
-	public void dumpHumanPathwayDiagrams(File dir, Boolean saveatxml)
-	{
+	public void dumpHumanPathwayDiagrams(File dir, Boolean saveatxml) {
 		notRenderable.clear();
 		Collection<?> diagrams;
 		try {
@@ -200,8 +205,7 @@ public class CLIConverter {
 						}
 					if (convert) {
 						Long id = pathway.getDBID();
-						convertReactomeToGPMLByID(id, dir,
-								saveatxml);
+						convertReactomeToGPMLByID(id, dir, saveatxml);
 					}
 				}
 			}
@@ -219,8 +223,7 @@ public class CLIConverter {
 	 * @throws Exception
 	 */
 
-	public void getSpeciesDbID()
-	{
+	public void getSpeciesDbID() {
 		Collection<?> diagrams;
 		try {
 			diagrams = adaptor
@@ -239,8 +242,7 @@ public class CLIConverter {
 						.getAttributeValue(ReactomeJavaConstants.species);
 				if (species == null) {
 					continue;
-				}
-				else {
+				} else {
 					System.out.println(species.getDBID() + "\t"
 							+ species.getDisplayName());
 				}
@@ -252,4 +254,3 @@ public class CLIConverter {
 	}
 
 }
-

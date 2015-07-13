@@ -38,7 +38,7 @@ import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.junit.Test;
+//import org.junit.Test;
 import org.reactome.biopax.BioPAXJavaConstants;
 import org.reactome.biopax.ReactomeToBioPAXPublicationConverter;
 import org.reactome.convert.common.AbstractConverterFromReactome;
@@ -1047,7 +1047,7 @@ public class ReactomeToGPMLConverter extends AbstractConverterFromReactome {
         dataNode.setAttribute("TextLabel", wrappedLabel);
     }
     
-    @Test
+//    @Test
     public void testConvert() throws Exception {
         MySQLAdaptor dba = new MySQLAdaptor("localhost",
                                             "gk_central_100509",
@@ -1076,7 +1076,7 @@ public class ReactomeToGPMLConverter extends AbstractConverterFromReactome {
         System.out.println("Total pathways: " + pathways.size());
     }
     
-    @Test
+//    @Test
     public void testSingleConvert() throws Exception {
 //        MySQLAdaptor dba = new MySQLAdaptor("localhost",
 //                                            "gk_current_ver42",
