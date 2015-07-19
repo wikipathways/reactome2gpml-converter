@@ -19,8 +19,9 @@ import org.reactome.convert.common.AbstractConverterFromReactome;
 
 /**
  * The main class for the Reactome Converter
+ * 
  * @author anwesha
- *
+ * 
  */
 public class CLIConverter {
 
@@ -47,10 +48,26 @@ public class CLIConverter {
 		/*
 		 * Abacavir transport (Test pathway)
 		 */
-		converter.convertReactomeToGPMLByID((long) 2161522, dir, false);
-		// converter.convertReactomeToGPMLByID((long) 73857, dir, false);
-		// converter.convertReactomeToGPMLByID((long) 2032785, dir, false);
+		// converter.convertReactomeToGPMLByID((long) 2161522, dir, true);
+		// converter.convertReactomeToGPMLByID((long) 5602358, dir, true);
 
+		// converter.convertReactomeToGPMLByID((long) 73857, dir, false);
+		// converter.convertReactomeToGPMLByID((long) 5602358, dir, true);
+
+		int[] ids = new int[] { 388841, 5627123, 2206281, 428157, 453276,
+				5339562, 71387, 109582, 109581, 881907, 2262752, 3296469,
+				432040, 432047, 75158, 5627117, 189445, 3108214, 198933,
+				3296482, 2262749, 2173793, 1475029, 194315, 4839748, 1362409,
+				4839744, 75205, 2644603, 1500931, 4839743, 169911, 450531,
+				68886, 199991, 4839735, 68875, 5368287, 446728, 1483249,
+				168928, 1483255, 72766, 4839726, 1483257, 5221030, 446203,
+				400508, 1483206, 3560782, 422475, 5250941, 5654736, 168898,
+				5654738, 5654741, 5218859, 5654743, 211000, 74160, 5358351,
+				373755, 5358346 };
+		for (int i : ids) {
+			converter.convertReactomeToGPMLByID((long) i, dir, true);
+		}
+		//
 		// converter.dumpHumanPathwayDiagrams(dir, false);
 		// converter.convertPlantPathwayDiagrams(dir, false);
 		// converter.getSpeciesDbID();
@@ -132,6 +149,7 @@ public class CLIConverter {
 				+ pathway.getDisplayName() + "...");
 		if (!r2g3Converter.convertPathway(pathway, gpmlfilename)) {
 			notRenderable.put(dbID, pathway.getDisplayName());
+			gpmlfilename.delete();
 		} else {
 			Renderable.put(dbID, pathway.getDisplayName());
 		}
