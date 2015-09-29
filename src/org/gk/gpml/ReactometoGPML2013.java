@@ -27,6 +27,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.bridgedb.DataSource;
+import org.bridgedb.bio.BioDataSource;
 import org.gk.graphEditor.PathwayEditor;
 import org.gk.model.GKInstance;
 import org.gk.model.InstanceUtilities;
@@ -79,6 +80,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	private static final int INITIAL_HEIGHT = 20;
 	private static final int MEDIUM_INITIAL_HEIGHT = 40;
 	private static final int COMPONENTS_ROWS = 20;
+	private static final int NO_OF_COMPLEXES = 10;
 	private static final int LONG_INITIAL_HEIGHT = 50;
 	private static final int COL_GAP = 40;
 	private static int NEW_COMPLEX_GAP = 40;
@@ -87,10 +89,15 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			+ "PathwayBrowser/#DB=gk_current&FOCUS_SPECIES_ID=48887&FOCUS_"
 			+ "PATHWAY_ID=";
 	String humanReactomeURLpost = " Reactome].";
+	String plantReactomeURLpre = "\nSource:[http://www.reactome.org/"
+			+ "PathwayBrowser/#DB=gk_current&FOCUS_SPECIES_ID=48887&FOCUS_"
+			+ "PATHWAY_ID=";
+	String plantReactomeURLpost = " Plant Reactome].";
+
 	private final String COMPLEX_ID = "complex_id";
 	private final String COPIES_NUM = "copies_num";
 	private final String LOCATION = "cellular_location";
-	
+
 	HashMap<Long, ArrayList<String>> r2gNodeList = new HashMap<Long, ArrayList<String>>();
 	List<HyperEdge> edges = new ArrayList<HyperEdge>();
 	List<RenderableCompartment> compartments = new ArrayList<RenderableCompartment>();
@@ -112,13 +119,13 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	PathwayElement label = null;
 	PathwayElement shape = null;
 	final String DATA_SOURCE = "Reactome - http://www.reactome.org";
-	final String VERSION = "52";
+	final String VERSION = "53";
 	final String PLANT_DATA_SOURCE = "Plant Reactome - http://plantreactome.gramene.org";
-	
-	
+	final String PLANT_VERSION = "43";
 
 	private ArrayList<String> countCopies(ArrayList<String> strings) {
-//		HashMap<String, Integer> componentCopies = new HashMap<String, Integer>();
+		// HashMap<String, Integer> componentCopies = new HashMap<String,
+		// Integer>();
 		String complexComponent;
 		int copies = 1;
 		int size = strings.size();
@@ -134,8 +141,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 				size--;// decrease the size of the array
 			}
 			complexComponentIDMap.put(complexComponent, copies);
-//			System.out.println(complexComponent + " : " + copies);
-//			componentCopies.put(complexComponent, copies);
+			// System.out.println(complexComponent + " : " + copies);
+			// componentCopies.put(complexComponent, copies);
 		}
 
 		return strings;
@@ -145,7 +152,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	 * Adding comments
 	 */
 	private void addComments(GKInstance instance, PathwayElement pwyele,
-			boolean mainTag) {
+			boolean mainTag, boolean isPlantReactome) {
 		String reactomeString = "";
 		String wpcomment = "";
 
@@ -163,8 +170,14 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 					}
 				}
 				if (mainTag) {
-					reactomeString = humanReactomeURLpre + instance.getDBID()
-							+ humanReactomeURLpost;
+					if (isPlantReactome) {
+						reactomeString = plantReactomeURLpre
+								+ instance.getDBID() + plantReactomeURLpost;
+					} else {
+						reactomeString = humanReactomeURLpre
+								+ instance.getDBID() + humanReactomeURLpost;
+					}
+
 					wpcomment = wpcomment + reactomeString;
 					pwyele.addComment(wpcomment, "WikiPathways-description");
 				} else {
@@ -289,17 +302,20 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			 * Use Reactome as default if no reference entity can be found
 			 */
 			pwyele.setDataSource(DataSource.getBySystemCode("Re"));
-
 			String id = instance == null ? rId.toString()
 					: getReactomeId(instance);
 			if (id == null) {
 				id = instance.getDBID().toString();
 			}
-			if (id.contains("REACT_")) {
-				pwyele.setElementID(id);
-			} else {
-				pwyele.setElementID("REACT_" + id);
-			}
+			/*
+			 * Patch for version 53, stable identifiers have been changed in
+			 * reactome
+			 */
+			// if (id.contains("REACT_")) {
+			pwyele.setElementID(id);
+			// } else {
+			// pwyele.setElementID("REACT_" + id);
+			// }
 
 		} else {
 			GKInstance db = (GKInstance) referenceEntity
@@ -439,7 +455,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 				if (backboneInteraction != null) {
 					gpmlpathway.add(backboneInteraction);
 					backboneInteraction.setGeneratedGraphId();
-					addComments(inst, backboneInteraction, false);
+					addComments(inst, backboneInteraction, false, false);
 					addLitRef(inst, backboneInteraction);
 				}
 				handleInputs(edge, backboneInteraction);
@@ -470,14 +486,22 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 					if (node instanceof RenderableProtein) {
 						datanode.setDataNodeType(DataNodeType.PROTEIN);
 					} else if (node instanceof RenderableRNA) {
+						/*
+						 * Changed RNA colour to purple
+						 */
 						datanode.setDataNodeType(DataNodeType.RNA);
+						datanode.setColor(new Color(153, 0, 153));
 					} else if (node instanceof RenderableChemical) {
 						datanode.setDataNodeType(DataNodeType.METABOLITE);
 						datanode.setColor(Color.BLUE);
 					} else if (node instanceof RenderableComplex) {
+						/*
+						 * Changed Complex colour to brown and shape to hexagon
+						 */
 						complexComponentIDs.clear();
 						datanode.setDataNodeType(DataNodeType.COMPLEX);
-						datanode.setColor(new Color(153,0,153));
+						datanode.setColor(new Color(165, 42, 42));
+						datanode.setShapeType(ShapeType.HEXAGON);
 						Long rId = node.getReactomeId();
 						ArrayList<String> complexComponentIDList = convertComplex(rId);
 						complexComponentIDList = countCopies(complexComponentIDList);
@@ -492,7 +516,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 						datanode.setDataNodeType(DataNodeType.UNKOWN);
 					}
 				addXref(datanode, node.getReactomeId(), inst);
-				addComments(inst, datanode, false);
+				addComments(inst, datanode, false, false);
 				addLitRef(inst, datanode);
 				datanode.setTextLabel(refineDisplayNames(node.getDisplayName()));
 				addGraphicsElm(node, datanode);
@@ -508,12 +532,12 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	/*
 	 * Adding complex compartments to the pathway
 	 */
-	private void createComplexMembers(ArrayList<String> complexComponentIDString,
-			String parentComplexId) {
+	private void createComplexMembers(
+			ArrayList<String> complexComponentIDString, String parentComplexId) {
 		for (int count = 0; count < complexComponentIDString.size(); count++) {
 			String complexname = complexComponentIDString.get(count);
 			String unparsedcomplexname = complexname;
-//			System.out.println("complex : " + complexname);
+			// System.out.println("complex : " + complexname);
 			GKInstance inst;
 			try {
 				if (complexname.startsWith("mainCom")) {
@@ -532,16 +556,16 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 							getReactomeId(inst));
 
 				} else if (complexname.startsWith("subCom")) {
-//					complexname = complexname.replaceFirst("subCom", "");
-//					Long rId = Long.parseLong(complexname);
-//					inst = dbAdaptor.fetchInstance(rId);
-//					pwyelement = PathwayElement
-//							.createPathwayElement(ObjectType.LABEL);
-//					gpmlpathway.add(pwyelement);
-//					pwyelement.setGeneratedGraphId();
-//					String displayname = refineDisplayNames(inst
-//							.getDisplayName());
-//					pwyelement.setTextLabel(displayname);
+					// complexname = complexname.replaceFirst("subCom", "");
+					// Long rId = Long.parseLong(complexname);
+					// inst = dbAdaptor.fetchInstance(rId);
+					// pwyelement = PathwayElement
+					// .createPathwayElement(ObjectType.LABEL);
+					// gpmlpathway.add(pwyelement);
+					// pwyelement.setGeneratedGraphId();
+					// String displayname = refineDisplayNames(inst
+					// .getDisplayName());
+					// pwyelement.setTextLabel(displayname);
 				}
 				/*
 				 * Creating Complex member DataNodes
@@ -563,31 +587,29 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 
 					Long rId = Long.parseLong(complexname);
 					inst = dbAdaptor.fetchInstance(rId);
-					String[] location = parseLocation(inst
-							.getDisplayName());
+					String[] location = parseLocation(inst.getDisplayName());
 					String displayname = refineDisplayNames(location[0]);
-					
+
 					pwyelement.setTextLabel(displayname);
 
 					pwyelement.setGroupRef(complexmem.getGroupId());
 					/*
-					 * Adding Dynamic properties 
-					 * COMPLEX_ID : for connecting complex and components 
-					 * COPIES_NUM : for counting copies of a complex component
-					 * LOCATION : for cellular location
+					 * Adding Dynamic properties COMPLEX_ID : for connecting
+					 * complex and components COPIES_NUM : for counting copies
+					 * of a complex component LOCATION : for cellular location
 					 */
 					pwyelement.setDynamicProperty(COMPLEX_ID,
 							complexmem.getDynamicProperty(COMPLEX_ID));
 					pwyelement.setDynamicProperty(COPIES_NUM, String
-							.valueOf(complexComponentIDMap.get(unparsedcomplexname)));
+							.valueOf(complexComponentIDMap
+									.get(unparsedcomplexname)));
 					pwyelement.setDynamicProperty(LOCATION, location[1]);
 
 					addXref(pwyelement, rId, inst);
-					addComments(inst, pwyelement, false);
+					addComments(inst, pwyelement, false, false);
 					addLitRef(inst, pwyelement);
 					pwyEleList.add(pwyelement);
 				}
-				
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -596,20 +618,18 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	}
 
 	/*
-	 * Parse the displayname to get location
-	 * returns :
-	 * [0] = text label
-	 * [1] = cellular location
+	 * Parse the displayname to get location returns : [0] = text label [1] =
+	 * cellular location
 	 */
 	private String[] parseLocation(String displayName) {
-		String [] loc  = new String[2];
-		if(displayName.contains("[")){
+		String[] loc = new String[2];
+		if (displayName.contains("[")) {
 			String[] firstSplit = displayName.split(Pattern.quote("["));
-			loc [0] = firstSplit[0];
-			if(firstSplit[1].contains("]")){
+			loc[0] = firstSplit[0];
+			if (firstSplit[1].contains("]")) {
 				String secondSplit = firstSplit[1].replace("]", "");
 				loc[1] = secondSplit;
-				}
+			}
 		}
 		return loc;
 	}
@@ -620,10 +640,10 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Boolean convertPathway(GKInstance reactomePathway, File gpmlfilename) {
+	public Boolean convertPathway(GKInstance reactomePathway, Long dbID, File gpmlfilename) {
 		try {
 			RenderablePathway rePathway = queryPathwayDiagram(reactomePathway);
-//			RenderablePathway rePathway = queryRePathway(reactomePathway);
+			// RenderablePathway rePathway = queryRePathway(reactomePathway);
 			/*
 			 * A virtual drawing is done to get correct dimensions
 			 */
@@ -686,14 +706,20 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			 */
 			mappInfo.setStaticProperty(StaticProperty.MAPINFONAME,
 					reactomePathway.getDisplayName());
+			/**
+			 * set reactome id as dynamic property
+			 */
+			mappInfo.setDynamicProperty("reactome_id", String.valueOf(dbID));
 			if (species.getDBID().equals(48887L)) {
 				mappInfo.setMapInfoDataSource(DATA_SOURCE);
 				mappInfo.setVersion(VERSION);
+				addComments(reactomePathway, mappInfo, true, false);
 			} else {
 				mappInfo.setMapInfoDataSource(PLANT_DATA_SOURCE);
+				mappInfo.setVersion(PLANT_VERSION);
+				addComments(reactomePathway, mappInfo, true, true);
 			}
 
-			addComments(reactomePathway, mappInfo, true);
 			addLitRef(reactomePathway, mappInfo);
 
 			/*
@@ -801,8 +827,10 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 				createLabelForCompartment(compartment, groupElm);
 				convertCompartment(compartment, groupElm);
 			}
+			if (!pwyEleList.isEmpty()) {
+				layoutComplexComponents(pwyEleList, y);
+			}
 
-			layoutComplexComponents(pwyEleList, y);
 			gpmlpathway.fixReferences();
 
 			// File outputFile = new File(gpmlfilename);
@@ -813,6 +841,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			gpmlpathway.writeToXml(gpmlfilename, false);
 
 		} catch (Exception e) {
+			e.printStackTrace(System.out);
 			System.out.println("No diagram available");
 			return false;
 		}
@@ -836,7 +865,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	}
 
 	private void createLabelForNote(Note note) {
-//		System.out.println("Converting Notes to Labels ...");
+		// System.out.println("Converting Notes to Labels ...");
 		if (!note.isPrivate()) // Private notes should not be converted
 		{
 			label = PathwayElement.createPathwayElement(ObjectType.LABEL);
@@ -1115,16 +1144,17 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			if (!newgroupRef.equalsIgnoreCase(groupRef)) {
 				NEW_COMPLEX_GAP = 40;
 				groupRef = newgroupRef;
-				if (complexCount<10 || row >= COMPONENTS_ROWS) {
+				if (complexCount < NO_OF_COMPLEXES || row >= COMPONENTS_ROWS) {
 					cy = y2;
 					col++;
 					row = 0;
 				}
-			}else{
-				if(i != 0){
+			} 
+			else {
+				if (i != 0) {
 					NEW_COMPLEX_GAP = 0;
 				}
-				}
+			}
 			double cx = 100 + col * (INITIAL_WIDTH + COL_GAP);
 
 			if (pweList.get(i).getTextLabel().length() <= 20) {

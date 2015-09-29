@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
@@ -26,10 +27,10 @@ import org.reactome.convert.common.AbstractConverterFromReactome;
 public class CLIConverter {
 
 	public static void main(String[] args) throws Exception {
-		if (args.length < 6) {
+		if (args.length < 7) {
 			// printUsage();
 			System.err
-					.println("Please provide the following parameters in order: dbhost dbName dbUser dbPwd dbPort outputDir");
+					.println("Please provide the following parameters in order: dbhost dbName dbUser dbPwd dbPort outputDir species");
 			System.exit(1);
 		}
 
@@ -37,6 +38,7 @@ public class CLIConverter {
 				args[3], Integer.parseInt(args[4]));
 
 		File dir = new File(args[5]);
+		String species = args[6];
 
 		dir.mkdirs();
 
@@ -48,29 +50,51 @@ public class CLIConverter {
 		/*
 		 * Abacavir transport (Test pathway)
 		 */
-		// converter.convertReactomeToGPMLByID((long) 2161522, dir, true);
-		// converter.convertReactomeToGPMLByID((long) 5602358, dir, true);
+//		 converter.convertReactomeToGPMLByID((long) 73884, dir, false);
+				
+		//converter.convertReactomeToGPMLByID((long) 5602358, dir, false);
+		//converter.convertReactomeToGPMLByID((long) 73857, dir, false);
+		//converter.convertReactomeToGPMLByID((long) 5602358, dir, false);
+	
 
-		// converter.convertReactomeToGPMLByID((long) 73857, dir, false);
-		// converter.convertReactomeToGPMLByID((long) 5602358, dir, true);
-
-		int[] ids = new int[] { 388841, 5627123, 2206281, 428157, 453276,
-				5339562, 71387, 109582, 109581, 881907, 2262752, 3296469,
-				432040, 432047, 75158, 5627117, 189445, 3108214, 198933,
-				3296482, 2262749, 2173793, 1475029, 194315, 4839748, 1362409,
-				4839744, 75205, 2644603, 1500931, 4839743, 169911, 450531,
-				68886, 199991, 4839735, 68875, 5368287, 446728, 1483249,
-				168928, 1483255, 72766, 4839726, 1483257, 5221030, 446203,
-				400508, 1483206, 3560782, 422475, 5250941, 5654736, 168898,
-				5654738, 5654741, 5218859, 5654743, 211000, 74160, 5358351,
-				373755, 5358346 };
-		for (int i : ids) {
-			converter.convertReactomeToGPMLByID((long) i, dir, true);
-		}
+//		for (int i : ids3) {
+//			converter.convertReactomeToGPMLByID((long) i, dir, false);
+//		}
 		//
-		// converter.dumpHumanPathwayDiagrams(dir, false);
-		// converter.convertPlantPathwayDiagrams(dir, false);
-		// converter.getSpeciesDbID();
+		
+//		 converter.convertPathwayDiagrams(dir, species, true);
+		 
+//		 converter.convertReactomeToGPMLByID((long) 975155, dir, false);
+//		 converter.convertReactomeToGPMLByID((long) 5602358, dir, false);
+//		 converter.convertPlantPathwayDiagrams(dir, false);
+//		 converter.getSpeciesDbID();
+		converter.getReactomeDbID(species);
+	}
+
+	private long speciescode;
+
+	private void convertPathwayDiagrams(File dir, String species, boolean b) {
+		if(species.equalsIgnoreCase("Human")){
+			speciescode = 48887L;
+		}else{
+			if(species.equalsIgnoreCase("Rice")){
+				speciescode = 186860;
+			}else{
+				if(species.equalsIgnoreCase("Maize")){
+					speciescode = 5402224;
+				}else{
+					if(species.equalsIgnoreCase("Arabidopsis")){
+						speciescode = 5398000;
+					}else{
+						if(species.equalsIgnoreCase("All")){
+							 convertPlantPathwayDiagrams(dir, false);
+						}
+					}
+				}
+			}
+		}
+		dumpPathwayDiagrams(dir, speciescode, b);
+		
 	}
 
 	private static void printUsage() throws Exception {
@@ -87,6 +111,7 @@ public class CLIConverter {
 
 	private final Map<Long, String> notRenderable;
 	private final Map<Long, String> Renderable;
+
 
 	private CLIConverter(MySQLAdaptor adaptor) {
 		this(adaptor, new ReactometoGPML2013());
@@ -110,7 +135,7 @@ public class CLIConverter {
 			SchemaAttribute att = cls
 					.getAttribute(ReactomeJavaConstants.representedPathway);
 			adaptor.loadInstanceAttributeValues(diagrams, att);
-			// Group all human pathways
+			
 			for (Object name : diagrams) {
 				GKInstance diagram = (GKInstance) name;
 				GKInstance pathway = (GKInstance) diagram
@@ -147,7 +172,7 @@ public class CLIConverter {
 		Long dbID = pathway.getDBID();
 		System.out.println("converting pathway #" + dbID + " "
 				+ pathway.getDisplayName() + "...");
-		if (!r2g3Converter.convertPathway(pathway, gpmlfilename)) {
+		if (!r2g3Converter.convertPathway(pathway, dbID, gpmlfilename)) {
 			notRenderable.put(dbID, pathway.getDisplayName());
 			gpmlfilename.delete();
 		} else {
@@ -189,7 +214,7 @@ public class CLIConverter {
 		}
 	}
 
-	public void dumpHumanPathwayDiagrams(File dir, Boolean saveatxml) {
+	public void dumpPathwayDiagrams(File dir, long l, Boolean saveatxml) {
 		notRenderable.clear();
 		Collection<?> diagrams;
 		try {
@@ -210,8 +235,7 @@ public class CLIConverter {
 				if (species == null) {
 					continue;
 				}
-				// for (int i = 0; i <= 5; i++) {
-				if (species.getDBID().equals(48887L)) {
+				if (species.getDBID().equals(l)) {
 					String fileName = AbstractConverterFromReactome
 							.getFileName(pathway);
 					String gpmlfile = fileName + ".gpml";
@@ -219,6 +243,7 @@ public class CLIConverter {
 					boolean convert = true;
 					for (File listOfFile : listOfFiles)
 						if (gpmlfile.equalsIgnoreCase(listOfFile.getName())) {
+							System.out.println("Skipping  "+gpmlfile);
 							convert = false;
 						}
 					if (convert) {
@@ -227,12 +252,10 @@ public class CLIConverter {
 					}
 				}
 			}
-			// }
-
-		} catch (Exception e) {
+			} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("Not rendered" + notRenderable);
+//		System.out.println("Not rendered" + notRenderable);
 	}
 
 	/**
@@ -270,5 +293,65 @@ public class CLIConverter {
 		}
 
 	}
+private Long getSpeciesCode(String species){
+	if(species.equalsIgnoreCase("Human")){
+		speciescode = 48887L;
+	}else{
+		if(species.equalsIgnoreCase("Rice")){
+			speciescode = 186860;
+		}else{
+			if(species.equalsIgnoreCase("Maize")){
+				speciescode = 5402224;
+			}else{
+				if(species.equalsIgnoreCase("Arabidopsis")){
+					speciescode = 5398000;
+				}
+			}
+		}
+	}
+	return speciescode;
+}
+	/**
+	 * This method gets the DB id for all pathways
+	 * @param species 
+	 * 
+	 * @throws Exception
+	 */
 
+	public void getReactomeDbID(String speciesName) {
+		int count = 0;
+		Collection<?> diagrams;
+		try {
+			diagrams = adaptor
+					.fetchInstancesByClass(ReactomeJavaConstants.PathwayDiagram);
+			SchemaClass cls = adaptor.fetchSchema().getClassByName(
+					ReactomeJavaConstants.PathwayDiagram);
+			SchemaAttribute att = cls
+					.getAttribute(ReactomeJavaConstants.representedPathway);
+			adaptor.loadInstanceAttributeValues(diagrams, att);
+			// Group all human pathways
+			
+			for (Object name : diagrams) {
+				GKInstance diagram = (GKInstance) name;
+				GKInstance pathway = (GKInstance) diagram
+						.getAttributeValue(ReactomeJavaConstants.representedPathway);
+				GKInstance species = (GKInstance) pathway
+						.getAttributeValue(ReactomeJavaConstants.species);
+				String fileName = AbstractConverterFromReactome
+						.getFileName(pathway);
+				if (pathway != null) {
+					if (species.getDBID().equals(getSpeciesCode(speciesName))) {
+						System.out.println(pathway.getDBID()+"\t"+fileName);	
+						count++;
+					}
+					
+				}
+				
+				}
+			} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println(count);
+		System.out.println("Done!");
+	}
 }
