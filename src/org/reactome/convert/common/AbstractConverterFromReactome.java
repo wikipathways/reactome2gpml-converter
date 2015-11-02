@@ -110,7 +110,7 @@ public abstract class AbstractConverterFromReactome {
 	}
 
 	/**
-	 * Load pathways from a file. File formata is like the following:
+	 * Load pathways from a file. File format is like the following:
 	 * header: pathwayName\tPathwayId
 	 * data: Pathway1\t123345
 	 * @param fileName
