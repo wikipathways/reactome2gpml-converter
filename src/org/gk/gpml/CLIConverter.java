@@ -15,6 +15,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import org.bridgedb.bio.DataSourceTxt;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
@@ -46,7 +47,11 @@ public class CLIConverter {
 		String version = args[7];
 		
 		dir.mkdirs();
-
+		
+		// Initialize BridgeDb datasources file
+		// Only have to do it once
+		DataSourceTxt.init();
+		
 		CLIConverter converter = new CLIConverter(adaptor);
 		/*
 		 * Boolean true to save ATXML files
@@ -77,15 +82,15 @@ public class CLIConverter {
 			if (species.equalsIgnoreCase("Human")) {
 				speciescode = 48887L;
 			} else if (species.equalsIgnoreCase("Rice")) {
-					speciescode = 186860;
-				} else if (species.equalsIgnoreCase("Maize")) {
-						speciescode = 5402224;
-					} else if (species.equalsIgnoreCase("Arabidopsis")) {
-							speciescode = 5398000;
-						}
-		dumpPathwayDiagrams(dir, speciescode, b, version);
+				speciescode = 186860;
+			} else if (species.equalsIgnoreCase("Maize")) {
+				speciescode = 5402224;
+			} else if (species.equalsIgnoreCase("Arabidopsis")) {
+				speciescode = 5398000;
+			}
+			dumpPathwayDiagrams(dir, speciescode, b, version);
 		}
-		}
+	}
 
 	private static void printUsage() throws Exception {
 		System.out

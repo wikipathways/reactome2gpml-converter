@@ -270,7 +270,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			referenceEntity = (GKInstance) instance
 					.getAttributeValue(ReactomeJavaConstants.referenceEntity);
 		}
-		DataSourceTxt.init();
+
 		if (referenceEntity == null) {
 			/*
 			 * Use Reactome as default if no reference entity can be found
