@@ -129,6 +129,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			boolean mainTag, boolean isPlantReactome) {
 		String reactomeString = "";
 		String wpcomment = "";
+		String reactomeID = "";
 
 		if (instance.getSchemClass().isValidAttribute(
 				ReactomeJavaConstants.summation)) {
@@ -154,6 +155,11 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 
 					wpcomment = wpcomment + reactomeString;
 					pwyele.addComment(wpcomment, "WikiPathways-description");
+					
+					reactomeID = "Pathway is converted from Reactome ID: " 
+							+ instance.getDBID();
+					pwyele.addComment(reactomeID, "Reactome-Converter");
+					
 				} else {
 					if (wpcomment != null && wpcomment.length() > 0) {
 						pwyele.addComment(wpcomment, "Reactome");
@@ -326,7 +332,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		shape.setGeneratedGraphId();
 		shape.setGroupRef(groupElm.getGroupId());
 		shape.setShapeType(ShapeType.ROUNDED_RECTANGLE);
-		shape.setLineStyle(LineStyle.DOUBLE);
+		shape.setLineStyle(LineStyle.SOLID);
 		shape.setLineThickness(3);
 		shape.setTransparent(true);
 		shape.setColor(new Color(192, 192, 192));

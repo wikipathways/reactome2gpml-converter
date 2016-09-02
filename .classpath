@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/gpml/org.bridgedb.bio.jar"/>
+	<classpathentry kind="lib" path="lib/gpml/org.bridgedb.jar"/>
+	<classpathentry kind="lib" path="lib/gpml/org.pathvisio.core.jar"/>
+	<classpathentry kind="lib" path="lib/jdom/jaxen-core.jar"/>
+	<classpathentry kind="lib" path="lib/jdom/jaxen-jdom.jar"/>
+	<classpathentry kind="lib" path="lib/jdom/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/jdom/saxpath.jar"/>
+	<classpathentry kind="lib" path="lib/mysql/mysql-connector-java-5.0.8-bin.jar"/>
+	<classpathentry kind="lib" path="lib/reactome/reactome.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

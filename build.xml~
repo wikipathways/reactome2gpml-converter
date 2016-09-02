@@ -3,7 +3,7 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/home/ryan/Desktop/ReactomeConverter_v1.1.0.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="/home/Ryan/Desktop/ReactomeConverter_v1.1.0.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="org.gk.gpml.CLIConverter"/>
                 <attribute name="Class-Path" value="."/>
