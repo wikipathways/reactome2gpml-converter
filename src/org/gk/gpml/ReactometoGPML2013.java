@@ -154,11 +154,14 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 					}
 
 					wpcomment = wpcomment + reactomeString;
-					pwyele.addComment(wpcomment, "WikiPathways-description");
-					
 					reactomeID = "Pathway is converted from Reactome ID: " 
 							+ instance.getDBID();
+					
+					
+					pwyele.addComment(wpcomment, "WikiPathways-description");
+					
 					pwyele.addComment(reactomeID, "Reactome-Converter");
+//					pwyele.addComment("61", "Version");
 					
 				} else {
 					if (wpcomment != null && wpcomment.length() > 0) {
@@ -172,6 +175,41 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 		}
 
 	}
+	
+	
+	private void addCommentsVersion(String version, PathwayElement pwyele,
+			boolean mainTag, boolean isPlantReactome) {
+
+		String reactomeVersion = "";
+
+					reactomeVersion = "Reactome version: " 
+							+ version;
+								
+//					pwyele.addComment(wpcomment + "\n" + "Pathway is converted from "
+//							+ "Reactome ID: " 
+//							+ instance.getDBID(), "WikiPathways-description");
+					
+					pwyele.addComment(reactomeVersion, "Reactome-version");
+
+	}
+
+	private void addCommentsAuthor(String authors, PathwayElement pwyele,
+			boolean mainTag, boolean isPlantReactome) {
+
+		String reactomeAuthor = "";
+
+					reactomeAuthor = "Reactome Author: " 
+							+ authors;
+								
+//					pwyele.addComment(wpcomment + "\n" + "Pathway is converted from "
+//							+ "Reactome ID: " 
+//							+ instance.getDBID(), "WikiPathways-description");
+					
+					pwyele.addComment(reactomeAuthor, "Reactome Author");
+
+	}
+	
+		
 
 	private PathwayElement addGraphicsElm(Node node, PathwayElement pwyele) {
 		Rectangle bounds = node.getBounds();
@@ -840,13 +878,16 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			 */
 			mappInfo.setDynamicProperty("reactome_id", String.valueOf(dbID));
 			if (species.getDBID().equals(48887L)) {
-				mappInfo.setMapInfoDataSource(DATA_SOURCE);
-				mappInfo.setVersion(version);
-				addComments(reactomePathway, mappInfo, true, false);
+//				mappInfo.setMapInfoDataSource(DATA_SOURCE);
+//				mappInfo.setVersion(version);
+				addComments(reactomePathway, mappInfo, true, false);	
+				addCommentsVersion(version, mappInfo, false, false);
+				
 			} else {
-				mappInfo.setMapInfoDataSource(PLANT_DATA_SOURCE);
-				mappInfo.setVersion(version);
+//				mappInfo.setMapInfoDataSource(PLANT_DATA_SOURCE);
+//				mappInfo.setVersion(version);
 				addComments(reactomePathway, mappInfo, true, true);
+				addCommentsVersion(version, mappInfo, false, true);
 			}
 
 			addLitRef(reactomePathway, mappInfo);
@@ -863,7 +904,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 				String authors = joinDisplayNames(values);
 
 				if (authors != null) {
-					mappInfo.setStaticProperty(StaticProperty.AUTHOR, authors);
+//					mappInfo.setStaticProperty(StaticProperty.AUTHOR, authors);
+					addCommentsAuthor(authors, mappInfo, false, false);
 				}
 			}
 			/*
@@ -876,8 +918,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 						.getAttributeValuesList(ReactomeJavaConstants.author);
 				String maintainer = joinDisplayNames(values);
 				if (maintainer != null) {
-					mappInfo.setStaticProperty(StaticProperty.MAINTAINED_BY,
-							maintainer);
+//					mappInfo.setStaticProperty(StaticProperty.MAINTAINED_BY,
+//							maintainer);
 				}
 				// Get email from editors
 				if (values != null && values.size() > 0) {
@@ -885,6 +927,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 					for (GKInstance person : values) {
 						String email = (String) person
 								.getAttributeValue(ReactomeJavaConstants.eMailAddress);
+//						System.out.println("***********xxxxxxxxxx: " + email );
 						if (email == null || email.length() == 0) {
 							continue;
 						}
@@ -894,8 +937,11 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 						builder.append(email);
 					}
 					if (builder.length() > 0) {
-						mappInfo.setStaticProperty(StaticProperty.EMAIL,
-								builder.toString());
+						mappInfo.setDynamicProperty("Maintainer", String.valueOf(mappInfo.getEmail()));
+//						System.out.println("OOOOOOOOOOOOOOOOOOO: "+String.valueOf(mappInfo.getEmail()));
+						
+//						mappInfo.setStaticProperty(StaticProperty.EMAIL,
+//								builder.toString());
 					}
 				}
 			}
