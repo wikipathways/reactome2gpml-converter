@@ -884,7 +884,7 @@ public class ReactomeToGPMLConverter extends AbstractConverterFromReactome {
             // Get email from editors
             if (values != null && values.size() > 0) {
                 StringBuilder builder = new StringBuilder();
-                for (Iterator it = values.iterator(); it.hasNext();) {
+               /*  for (Iterator it = values.iterator(); it.hasNext();) {
                     GKInstance person = (GKInstance) it.next();
                     String email = (String) person.getAttributeValue(ReactomeJavaConstants.eMailAddress);
                     if (email == null || email.length() == 0)
@@ -892,7 +892,7 @@ public class ReactomeToGPMLConverter extends AbstractConverterFromReactome {
                     if (builder.length() > 0)
                         builder.append(", ");
                     builder.append(email);
-                }
+                } */
                 if (builder.length() > 0)
                     pathwayElm.setAttribute(GPMLConstants.Email,
                                             builder.toString());

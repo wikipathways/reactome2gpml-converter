@@ -922,7 +922,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 //							maintainer);
 				}
 				// Get email from editors
-				if (values != null && values.size() > 0) {
+				/* 	if (values != null && values.size() > 0) {
 					StringBuilder builder = new StringBuilder();
 					for (GKInstance person : values) {
 						String email = (String) person
@@ -934,7 +934,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 						if (builder.length() > 0) {
 							builder.append(", ");
 						}
-						builder.append(email);
+						builder.append(email); 
 					}
 					if (builder.length() > 0) {
 						mappInfo.setDynamicProperty("Maintainer", String.valueOf(mappInfo.getEmail()));
@@ -943,7 +943,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 //						mappInfo.setStaticProperty(StaticProperty.EMAIL,
 //								builder.toString());
 					}
-				}
+				} */
 			}
 
 			if (targetDir == null) {
