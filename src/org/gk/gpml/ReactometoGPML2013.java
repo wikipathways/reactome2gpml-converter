@@ -226,12 +226,11 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	 * Adding literature references
 	 */
 	private void addLitRef(GKInstance instance, PathwayElement pwyele) {
-		if (instance.getSchemClass().isValidAttribute(
-				ReactomeJavaConstants.literatureReference)) {
+		if (instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.literatureReference)) {
 			List<GKInstance> litRefs;
 			try {
-				litRefs = instance
-						.getAttributeValuesList(ReactomeJavaConstants.literatureReference);
+				litRefs = instance.getAttributeValuesList(ReactomeJavaConstants.literatureReference);
+				System.out.println(instance.getDisplayName() + "\t" +pwyele.getObjectType() + "\t" + litRefs.size() + "\t" + litRefs);
 				if (litRefs != null && litRefs.size() > 0) {
 					for (GKInstance litRef : litRefs)
 						if (litRef.getSchemClass().isValidAttribute(
@@ -251,7 +250,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 									.newInstance();
 							DocumentBuilder db = dbf.newDocumentBuilder();
 							XPath xPath = XPathFactory.newInstance().newXPath();
-							String urlString = "http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=ext_id:"
+							String urlString = "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=ext_id:"
 									+ pubId + "%20src:med";
 							org.w3c.dom.Document publication = db
 									.parse(new URL(urlString).openStream());
