@@ -118,7 +118,6 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	PathwayElement label = null;
 	PathwayElement shape = null;
 	final String DATA_SOURCE = "Reactome - http://www.reactome.org";
-//	final String VERSION = getVersion();
 	final String PLANT_DATA_SOURCE = "Plant Reactome - http://plantreactome.gramene.org";
 	final String PLANT_VERSION = "43";
 
@@ -230,7 +229,6 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			List<GKInstance> litRefs;
 			try {
 				litRefs = instance.getAttributeValuesList(ReactomeJavaConstants.literatureReference);
-				System.out.println(instance.getDisplayName() + "\t" +pwyele.getObjectType() + "\t" + litRefs.size() + "\t" + litRefs);
 				if (litRefs != null && litRefs.size() > 0) {
 					for (GKInstance litRef : litRefs)
 						if (litRef.getSchemClass().isValidAttribute(
@@ -992,8 +990,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			 * the compartments to rectangles
 			 */
 			for (RenderableCompartment compartment : compartments) {
-				PathwayElement groupElm = PathwayElement
-						.createPathwayElement(ObjectType.GROUP);
+				PathwayElement groupElm = PathwayElement.createPathwayElement(ObjectType.GROUP);
 				gpmlpathway.add(groupElm);
 				groupElm.setGeneratedGraphId();
 				groupElm.setGroupId(gpmlpathway.getUniqueGroupId());
