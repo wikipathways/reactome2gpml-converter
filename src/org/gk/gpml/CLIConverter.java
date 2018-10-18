@@ -26,7 +26,7 @@ import org.reactome.convert.common.AbstractConverterFromReactome;
 /**
  * The main class for the Reactome Converter
  * 
- * @author anwesha
+ * @author anwesha, desl, mkutmon
  * 
  */
 public class CLIConverter {
@@ -34,13 +34,11 @@ public class CLIConverter {
 	public static void main(String[] args) throws Exception {
 		if (args.length < 7) {
 			// printUsage();
-			System.err
-					.println("Please provide the following parameters in order: dbhost dbName dbUser dbPwd dbPort outputDir species");
+			System.err.println("Please provide the following parameters in order: dbhost dbName dbUser dbPwd dbPort outputDir species versionNumber");
 			System.exit(1);
 		}
 
-		MySQLAdaptor adaptor = new MySQLAdaptor(args[0], args[1], args[2],
-				args[3], Integer.parseInt(args[4]));
+		MySQLAdaptor adaptor = new MySQLAdaptor(args[0], args[1], args[2], args[3], Integer.parseInt(args[4]));
 
 		File dir = new File(args[5]);
 		String species = args[6];
@@ -59,13 +57,13 @@ public class CLIConverter {
 		/*
 		 * Abacavir transport (Test pathway)
 		 */
-		// converter.convertReactomeToGPMLByID((long) 264876, dir, true);
+//		converter.convertReactomeToGPMLByID((long) 264876, dir, true);
 		// converter.convertReactomeToGPMLByID((long) 5602358, dir, false);
 		// converter.convertReactomeToGPMLByID((long) 73857, dir, false);
 		// converter.convertReactomeToGPMLByID((long) 5602358, dir, false);
 		System.out.println("Converter Started");
 		converter.convertPathwayDiagrams(dir, species, false, version);
-		System.out.println("Converter Stopped");
+		System.out.println("Converter Done");
 		// converter.convertReactomeToGPMLByID((long) 975155, dir, false);
 		// converter.convertReactomeToGPMLByID((long) 5602358, dir, false);
 		// converter.convertPlantPathwayDiagrams(dir, false);
@@ -76,20 +74,20 @@ public class CLIConverter {
 	private long speciescode;
 
 	private void convertPathwayDiagrams(File dir, String species, boolean b, String version) {
-		if (species.equalsIgnoreCase("All")) {
-			convertPlantPathwayDiagrams(dir, false, version);
-		}else{
-			if (species.equalsIgnoreCase("Human")) {
+//		if (species.equalsIgnoreCase("All")) {
+//			convertPlantPathwayDiagrams(dir, false, version);
+//		}else{
+//			if (species.equalsIgnoreCase("Human")) {
 				speciescode = 48887L;
-			} else if (species.equalsIgnoreCase("Rice")) {
-				speciescode = 186860;
-			} else if (species.equalsIgnoreCase("Maize")) {
-				speciescode = 5402224;
-			} else if (species.equalsIgnoreCase("Arabidopsis")) {
-				speciescode = 5398000;
-			}
+//			} else if (species.equalsIgnoreCase("Rice")) {
+//				speciescode = 186860;
+//			} else if (species.equalsIgnoreCase("Maize")) {
+//				speciescode = 5402224;
+//			} else if (species.equalsIgnoreCase("Arabidopsis")) {
+//				speciescode = 5398000;
+//			}
 			dumpPathwayDiagrams(dir, speciescode, b, version);
-		}
+//		}
 	}
 
 	private static void printUsage() throws Exception {
@@ -107,6 +105,7 @@ public class CLIConverter {
 	private final Map<Long, String> notRenderable;
 	private final Map<Long, String> Renderable;
 
+
 	private Logger logger;
 
 	private CLIConverter(MySQLAdaptor adaptor) {
@@ -121,48 +120,48 @@ public class CLIConverter {
 		this.r2g3Converter.setMySQLAdaptor(adaptor);
 	}
 
-	private void convertPlantPathwayDiagrams(File dir, boolean saveatxml, String version) {
-		Collection<?> diagrams;
-		try {
-			diagrams = adaptor
-					.fetchInstancesByClass(ReactomeJavaConstants.PathwayDiagram);
-			SchemaClass cls = adaptor.fetchSchema().getClassByName(
-					ReactomeJavaConstants.PathwayDiagram);
-			SchemaAttribute att = cls
-					.getAttribute(ReactomeJavaConstants.representedPathway);
-			adaptor.loadInstanceAttributeValues(diagrams, att);
-
-			for (Object name : diagrams) {
-				GKInstance diagram = (GKInstance) name;
-				GKInstance pathway = (GKInstance) diagram
-						.getAttributeValue(ReactomeJavaConstants.representedPathway);
-				GKInstance species = (GKInstance) pathway
-						.getAttributeValue(ReactomeJavaConstants.species);
-				if (species == null) {
-					continue;
-				} else {
-
-					try {
-						String fileName = AbstractConverterFromReactome
-								.getFileName(pathway);
-						if (saveatxml) {
-							File atxmlfile = new File(dir, fileName + ".atxml");
-							atxmlfile.createNewFile();
-							r2g3Converter.queryATXML(pathway, atxmlfile);
-						}
-						File gpmlfile = new File(dir, fileName + ".gpml");
-						gpmlfile.createNewFile();
-						convertReactomeToGPML(pathway, gpmlfile, version);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
+//	private void convertPlantPathwayDiagrams(File dir, boolean saveatxml, String version) {
+//		Collection<?> diagrams;
+//		try {
+//			diagrams = adaptor
+//					.fetchInstancesByClass(ReactomeJavaConstants.PathwayDiagram);
+//			SchemaClass cls = adaptor.fetchSchema().getClassByName(
+//					ReactomeJavaConstants.PathwayDiagram);
+//			SchemaAttribute att = cls
+//					.getAttribute(ReactomeJavaConstants.representedPathway);
+//			adaptor.loadInstanceAttributeValues(diagrams, att);
+//
+//			for (Object name : diagrams) {
+//				GKInstance diagram = (GKInstance) name;
+//				GKInstance pathway = (GKInstance) diagram
+//						.getAttributeValue(ReactomeJavaConstants.representedPathway);
+//				GKInstance species = (GKInstance) pathway
+//						.getAttributeValue(ReactomeJavaConstants.species);
+//				if (species == null) {
+//					continue;
+//				} else {
+//
+//					try {
+//						String fileName = AbstractConverterFromReactome
+//								.getFileName(pathway);
+//						if (saveatxml) {
+//							File atxmlfile = new File(dir, fileName + ".atxml");
+//							atxmlfile.createNewFile();
+//							r2g3Converter.queryATXML(pathway, atxmlfile);
+//						}
+//						File gpmlfile = new File(dir, fileName + ".gpml");
+//						gpmlfile.createNewFile();
+//						convertReactomeToGPML(pathway, gpmlfile, version);
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	private void convertReactomeToGPML(GKInstance pathway, File gpmlfilename, String version) {
 		Long dbID = pathway.getDBID();
@@ -199,8 +198,7 @@ public class CLIConverter {
 
 		try {
 			pathway = adaptor.fetchInstance(dbID);
-			String fileName = AbstractConverterFromReactome
-					.getFileName(pathway);
+			String fileName = AbstractConverterFromReactome.getFileName(pathway);
 			if (saveatxml) {
 				File atxmlfile = new File(dir, fileName + ".atxml");
 				atxmlfile.createNewFile();
@@ -247,26 +245,20 @@ public class CLIConverter {
 		notRenderable.clear();
 		Collection<?> diagrams;
 		try {
-			diagrams = adaptor
-					.fetchInstancesByClass(ReactomeJavaConstants.PathwayDiagram);
-			SchemaClass cls = adaptor.fetchSchema().getClassByName(
-					ReactomeJavaConstants.PathwayDiagram);
-			SchemaAttribute att = cls
-					.getAttribute(ReactomeJavaConstants.representedPathway);
+			diagrams = adaptor.fetchInstancesByClass(ReactomeJavaConstants.PathwayDiagram);
+			SchemaClass cls = adaptor.fetchSchema().getClassByName(ReactomeJavaConstants.PathwayDiagram);
+			SchemaAttribute att = cls.getAttribute(ReactomeJavaConstants.representedPathway);
 			adaptor.loadInstanceAttributeValues(diagrams, att);
 			// Group all human pathways
 			for (Object name : diagrams) {
 				GKInstance diagram = (GKInstance) name;
-				GKInstance pathway = (GKInstance) diagram
-						.getAttributeValue(ReactomeJavaConstants.representedPathway);
-				GKInstance species = (GKInstance) pathway
-						.getAttributeValue(ReactomeJavaConstants.species);
+				GKInstance pathway = (GKInstance) diagram.getAttributeValue(ReactomeJavaConstants.representedPathway);
+				GKInstance species = (GKInstance) pathway.getAttributeValue(ReactomeJavaConstants.species);
 				if (species == null) {
 					continue;
 				}
 				if (species.getDBID().equals(l)) {
-					String fileName = AbstractConverterFromReactome
-							.getFileName(pathway);
+					String fileName = AbstractConverterFromReactome.getFileName(pathway);
 					String gpmlfile = fileName + ".gpml";
 					File[] listOfFiles = dir.listFiles();
 					boolean convert = true;
