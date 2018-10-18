@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project reactome2gpml-converter">
-    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
-    <!--ANT 1.7 is required                                        -->
-    <target name="create_run_jar">
-        <jar destfile="ReactomeConverter_v1.2.0.jar" filesetmanifest="mergewithoutmain">
+<project name="Reactome2GPML converter" default="jar">
+    <property name="src" location="src" />
+    <property name="build" location="build" />
+    <property name="dist" location="dist" />
+    <property name="version" value="1.2.0" />
+
+    <path id="class.path">
+        <fileset dir="lib">
+                <include name="**/*.jar"/>
+        </fileset>
+    </path>
+    <target name="init">
+        <mkdir dir="${build}" />
+        <mkdir dir="${dist}" />
+    </target>
+
+    <target name="compile" depends="init" description="compile the source">
+       <javac srcdir="${src}" destdir="${build}" >
+                <classpath refid="class.path"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile" description="builds jar and puts it into dist dir">
+        <jar destfile="${dist}/ReactomeConverter_v${version}.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="org.gk.gpml.CLIConverter"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="bin"/>
+            <fileset dir="build" />
             <zipfileset excludes="META-INF/*.SF" src="lib/jdom/jaxen-core.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/jdom/jaxen-jdom.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/jdom/jdom.jar"/>
@@ -19,5 +38,10 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/gpml/org.bridgedb.bio.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/gpml/org.pathvisio.core.jar"/>
         </jar>
+    </target>
+
+    <target name="clean">
+        <delete dir="${dist}"/>
+        <delete dir="${build}"/>
     </target>
 </project>
