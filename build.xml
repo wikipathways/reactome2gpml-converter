@@ -3,21 +3,21 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/home/ryan/Desktop/ReactomeConverter_v1.1.0.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="ReactomeConverter_v1.2.0.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="org.gk.gpml.CLIConverter"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="/home/ryan/git/reactome2gpml-converter/bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/ryan/git/reactome2gpml-converter/lib/jdom/jaxen-core.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/ryan/git/reactome2gpml-converter/lib/jdom/jaxen-jdom.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/ryan/git/reactome2gpml-converter/lib/jdom/jdom.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/ryan/git/reactome2gpml-converter/lib/jdom/saxpath.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/ryan/git/reactome2gpml-converter/lib/mysql/mysql-connector-java-5.0.8-bin.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/ryan/git/reactome2gpml-converter/lib/reactome/reactome.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/ryan/git/reactome2gpml-converter/lib/gpml/org.bridgedb.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/ryan/git/reactome2gpml-converter/lib/gpml/org.bridgedb.bio.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/ryan/git/reactome2gpml-converter/lib/gpml/org.pathvisio.core.jar"/>
+            <fileset dir="bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jdom/jaxen-core.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jdom/jaxen-jdom.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jdom/jdom.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jdom/saxpath.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/mysql/mysql-connector-java-5.0.8-bin.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/reactome/reactome.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/gpml/org.bridgedb.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/gpml/org.bridgedb.bio.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/gpml/org.pathvisio.core.jar"/>
         </jar>
     </target>
 </project>
