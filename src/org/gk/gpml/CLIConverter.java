@@ -49,13 +49,15 @@ public class CLIConverter {
 		// Initialize BridgeDb datasources file
 		// Only have to do it once
 		DataSourceTxt.init();
-		
+		final long startTime = System.nanoTime();
 		System.out.println("[INFO]\tStart conversion");
 		
 		CLIConverter converter = new CLIConverter(adaptor);
 		System.out.println("Converter Started");
 		converter.convertPathwayDiagrams(dir, species, false, version);
 		System.out.println("Converter Done");
+		final long duration = System.nanoTime() - startTime;
+		System.out.println(duration);
 	}
 
 	private long speciescode;
