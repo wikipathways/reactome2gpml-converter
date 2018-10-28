@@ -86,9 +86,9 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 	private static final int COL_GAP = 40;
 	private static int NEW_COMPLEX_GAP = 40;
 
-	String humanReactomeURLpre = "\n View original pathway at:[http://www.reactome.org/PathwayBrowser/#DIAGRAM=";
+	String humanReactomeURLpre = "\n View original pathway at [http://www.reactome.org/PathwayBrowser/#DIAGRAM=";
 	String humanReactomeURLpost = " Reactome].";
-	String plantReactomeURLpre = "\nSource:[http://www.reactome.org/"
+	String plantReactomeURLpre = "\nSource: [http://www.reactome.org/"
 			+ "PathwayBrowser/#DB=gk_current&FOCUS_SPECIES_ID=48887&FOCUS_"
 			+ "PATHWAY_ID=";
 	String plantReactomeURLpost = " Plant Reactome].";
