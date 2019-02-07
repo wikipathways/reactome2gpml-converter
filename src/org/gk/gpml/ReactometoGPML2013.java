@@ -341,6 +341,7 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 			 * ChEBI and uniprot give errors while searching by full name
 			 * This also happens for PubChem Compound (should be PubChem-Compound)
 			 * And NCBI Nucleotide (which should link to NCBI Protein).
+			 * New addition: "IUPHAR" for drugs
 			 */
 			String identifier = getIdentifierFromReferenceEntity(referenceEntity);
 			if (db.getDisplayName().equalsIgnoreCase("chebi")) {
@@ -354,6 +355,8 @@ public class ReactometoGPML2013 extends AbstractConverterFromReactome {
 				pwyele.setDataSource(DataSource.getExistingBySystemCode("Mbm"));
 			} else if (db.getDisplayName().equalsIgnoreCase("PubChem Compound")) {
 				pwyele.setDataSource(DataSource.getExistingBySystemCode("Cpc"));
+			} else if (db.getDisplayName().equalsIgnoreCase("IUPHAR")) {
+				pwyele.setDataSource(DataSource.getExistingBySystemCode("Gpl"));
 			} else if (db.getDisplayName().equalsIgnoreCase("NCBI Nucleotide")) {
 				pwyele.setDataSource(DataSource.getExistingBySystemCode("Np"));
 			} else {
