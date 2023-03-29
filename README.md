@@ -16,6 +16,4 @@ For more information, read the publication on this project titled:
 "Reactome from a WikiPathways Perspective" by Anwesha Bohler , Guanming Wu, Martina Kutmon, Leontius Adhika Pradhana, Susan L. Coort, Kristina Hanspers, Robin Haw, Alexander R. Pico, Chris T. Evelo. https://doi.org/10.1371/journal.pcbi.1004941
 
 Recent conversions for WikiPathways and news can be found at:
-https://www.wikipathways.org/index.php/Portal:Reactome
-
-A backup of the project website is located at : http://projects.bigcat.unimaas.nl/ReactomeConverter
+https://classic.wikipathways.org/index.php/Portal:Reactome
