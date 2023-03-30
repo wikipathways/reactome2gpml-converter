@@ -1,5 +1,6 @@
-reactome2gpml-converter
-=======================
+[![build](https://github.com/wikipathways/reactome2gpml-converter/actions/workflows/build.yml/badge.svg)](https://github.com/wikipathways/reactome2gpml-converter/actions/workflows/build.yml)
+
+# Reactome2GPML Converter
 
 This converter converts Reactome pathways to GPML 2013a format.
 
